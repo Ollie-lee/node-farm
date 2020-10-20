@@ -1,5 +1,7 @@
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
+
 //blocking sync
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8')
 // console.log(textIn);
@@ -31,10 +33,37 @@ const http = require('http');
 
 // --------------------------SERVER------------
 //step1: create a server
+
+//top level code only get executed once
+//so we use sync version, cuz it's easier to handle data
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
+const dataObj = JSON.parse(data)
+
+//here the callback is executed when there is a new request
 const server = http.createServer((req, res) => {
   //each time request hit server, this call back is called
-  console.log(req);
-  res.end('Hello from server')//send back a very simple response
+  const pathName = req.url
+  if (pathName === '/' || pathName === '/overview') {
+    res.end('THis is over view')//send back a very simple response
+
+  } else if (pathName === '/product') {
+    res.end('this is product')
+  } else if (pathName === '/api') {
+    //use script's context dir string
+    res.writeHead(200, {
+      'Content-type': 'application/json'
+    })
+    res.end(data) // only receive string
+  }
+  else {
+    //write response header before we send response
+    //status code is made up by developer
+    res.writeHead(404, {
+      'Content-type': 'text-html',
+      'made-up-header': 'hahaha'
+    })
+    res.end('<h1>404!</h1>')
+  }
 })
 
 //step2: listen to incoming request from client on localhost IP's specific port
