@@ -58,7 +58,7 @@ const replaceTemplate = (tempCard, product) => {
 
   if (!product.organic) {
     output = output.replace(/{%NotOrganic%}/g, 'not-organic');
-  } 
+  }
 
   return output
 }
@@ -68,26 +68,30 @@ const replaceTemplate = (tempCard, product) => {
 const server = http.createServer((req, res) => {
   //each time request hit server, this call back is called
   const pathName = req.url
-
+  const { pathname, query } = url.parse(pathName, true);//second: parse query string to obj
   //overview page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {
       'Content-type': 'text/html',
     })
 
     // will be an array, with the five final HTML's,=> then join each array element into a new string
     const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('')
-    const output = tempOverview.replace('{%PRODUCT_CARDS%}',cardsHtml);
+    const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
 
     res.end(output)//send back a very simple response
 
 
     //product page
-  } else if (pathName === '/product') {
-    res.end('this is product')
-
+  } else if (pathname === '/product') {
+    res.writeHead(200, {
+      'Content-type': 'text/html',
+    })
+    const product = dataObj[query.id]//retrieve one single data obj
+    const output = replaceTemplate(tempProduct, product)
+    res.end(output)
     //api page
-  } else if (pathName === '/api') {
+  } else if (pathname === '/api') {
     //use script's context dir string
     res.writeHead(200, {
       'Content-type': 'application/json'
