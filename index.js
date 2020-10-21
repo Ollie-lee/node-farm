@@ -31,23 +31,62 @@ const url = require('url');
 // })
 // console.log('file has been written');
 
+///////////////////////////////////////////////////////////////////////////////////
 // --------------------------SERVER------------
 //step1: create a server
 
 //top level code only get executed once
 //so we use sync version, cuz it's easier to handle data
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
+const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8')
+const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8')
+const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8')
 const dataObj = JSON.parse(data)
+
+const replaceTemplate = (tempCard, product) => {
+  let output = tempCard.replace(/{%ProductName%}/g, product.productName);
+  output = output.replace(/{%Image%}/g, product.image);
+  output = output.replace(/{%Price%}/g, product.price);
+  output = output.replace(/{%From%}/g, product.from);
+  output = output.replace(/{%NutrientsName%}/g, product.nutrients);
+  output = output.replace(/{%Quantity%}/g, product.quantity);
+  output = output.replace(/{%Description%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
+  output = output.replace(/{%Price%}/g, product.price);
+  output = output.replace(/{%Price%}/g, product.price);
+  output = output.replace(/{%Price%}/g, product.price);
+
+  if (!product.organic) {
+    output = output.replace(/{%NotOrganic%}/g, 'not-organic');
+  } 
+
+  return output
+}
+
 
 //here the callback is executed when there is a new request
 const server = http.createServer((req, res) => {
   //each time request hit server, this call back is called
   const pathName = req.url
-  if (pathName === '/' || pathName === '/overview') {
-    res.end('THis is over view')//send back a very simple response
 
+  //overview page
+  if (pathName === '/' || pathName === '/overview') {
+    res.writeHead(200, {
+      'Content-type': 'text/html',
+    })
+
+    // will be an array, with the five final HTML's,=> then join each array element into a new string
+    const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('')
+    const output = tempOverview.replace('{%PRODUCT_CARDS%}',cardsHtml);
+
+    res.end(output)//send back a very simple response
+
+
+    //product page
   } else if (pathName === '/product') {
     res.end('this is product')
+
+    //api page
   } else if (pathName === '/api') {
     //use script's context dir string
     res.writeHead(200, {
@@ -55,11 +94,13 @@ const server = http.createServer((req, res) => {
     })
     res.end(data) // only receive string
   }
+
+  //not found page
   else {
     //write response header before we send response
     //status code is made up by developer
     res.writeHead(404, {
-      'Content-type': 'text-html',
+      'Content-type': 'text/html',
       'made-up-header': 'hahaha'
     })
     res.end('<h1>404!</h1>')
