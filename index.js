@@ -1,6 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
+const replaceTemplate = require('./modules/replaceTemplate'); 
 
 //blocking sync
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8')
@@ -43,25 +44,7 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'u
 const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8')
 const dataObj = JSON.parse(data)
 
-const replaceTemplate = (tempCard, product) => {
-  let output = tempCard.replace(/{%ProductName%}/g, product.productName);
-  output = output.replace(/{%Image%}/g, product.image);
-  output = output.replace(/{%Price%}/g, product.price);
-  output = output.replace(/{%From%}/g, product.from);
-  output = output.replace(/{%NutrientsName%}/g, product.nutrients);
-  output = output.replace(/{%Quantity%}/g, product.quantity);
-  output = output.replace(/{%Description%}/g, product.description);
-  output = output.replace(/{%ID%}/g, product.id);
-  output = output.replace(/{%Price%}/g, product.price);
-  output = output.replace(/{%Price%}/g, product.price);
-  output = output.replace(/{%Price%}/g, product.price);
 
-  if (!product.organic) {
-    output = output.replace(/{%NotOrganic%}/g, 'not-organic');
-  }
-
-  return output
-}
 
 
 //here the callback is executed when there is a new request
