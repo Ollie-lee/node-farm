@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
     })
     const product = dataObj[query.id]//retrieve one single data obj
     const output = replaceTemplate(tempProduct, product)
-    res.end(output)
+    res.end(output) // whole (HTML + CSS).html file
     //api page
   } else if (pathname === '/api') {
     //use script's context dir string
