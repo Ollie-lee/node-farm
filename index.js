@@ -1,7 +1,10 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
-const replaceTemplate = require('./modules/replaceTemplate'); 
+
+const slugify = require('slugify');
+
+const replaceTemplate = require('./modules/replaceTemplate');
 
 //blocking sync
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8')
@@ -44,7 +47,7 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'u
 const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8')
 const dataObj = JSON.parse(data)
 
-
+const slugs = dataObj.map(el => slugify(el.productName, { lower: true }))
 
 
 //here the callback is executed when there is a new request
@@ -52,6 +55,9 @@ const server = http.createServer((req, res) => {
   //each time request hit server, this call back is called
   const pathName = req.url
   const { pathname, query } = url.parse(pathName, true);//second: parse query string to obj
+  // console.log(pathName);
+  // console.log(pathname);
+  // console.log(query);
   //overview page
   if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {

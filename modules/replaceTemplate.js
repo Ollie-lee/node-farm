@@ -7,9 +7,6 @@ module.exports = (tempCard, product) => {
   output = output.replace(/{%Quantity%}/g, product.quantity);
   output = output.replace(/{%Description%}/g, product.description);
   output = output.replace(/{%ID%}/g, product.id);
-  output = output.replace(/{%Price%}/g, product.price);
-  output = output.replace(/{%Price%}/g, product.price);
-  output = output.replace(/{%Price%}/g, product.price);
 
   if (!product.organic) {
     output = output.replace(/{%NotOrganic%}/g, 'not-organic');
